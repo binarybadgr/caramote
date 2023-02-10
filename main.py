@@ -1,12 +1,23 @@
 import os
+import sys
+import faulthandler
 import platform
 import cv2
 
+# enable GPIO on ARM64 and enable debugging on x86_64
 def check_platform():
-    if platform.machine() == 'arm':
-        import gpio
+    if platform.machine() == 'ARM64':
+        import RPi.GPIO as GPIO
+        import time
+        # Define GPIO to LCD mapping
+        LCD_RS = 7
+        LCD_E  = 8
+        LCD_D4 = 25
+        LCD_D5 = 24
+        LCD_D6 = 23
+        LCD_D7 = 18
     elif platform.machine() == '' or platform.machine() == 'x86_64':
-        print('testing mode')
+        import pdb
 
 def diagnostic():
     return result
