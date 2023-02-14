@@ -78,3 +78,4 @@ def count():
 if __name__ == '__main__':
     check_platform()
     show_info()
+    count()
