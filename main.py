@@ -28,10 +28,8 @@ def show_info():
     print(f'python: {platform.python_version()}')
     print(f'opencv: {cv2.__version__}')
 
-def cv_prep():
-    capture = cv2.VideoCapture(0)
-
 def count():
+    capture = cv2.VideoCapture(0)
     while capture.isOpened():
         ret, img_input = capture.read()
         if not ret:
@@ -44,6 +42,7 @@ def count():
         canny = cv2.Canny(gray, 10, 20)
         _, thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
         contours, hierarachy = cv2.findContours(thresh, cv2.RETR_TREE,
+                                                cv2.CHAIN_APPROX_SIMPLE)
         for c in contours:
             print(len(contours))
             if len(contours) > 1: cv2.waitKey(-1)
