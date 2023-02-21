@@ -2,6 +2,7 @@ import os
 import sys
 import faulthandler
 import platform
+import sqlite3
 import cv2
 
 # enable GPIO on ARM64 and enable debugging on x86_64
