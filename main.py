@@ -20,6 +20,12 @@ def check_platform():
     elif platform.machine() == '' or platform.machine() == 'x86_64':
         import pdb
 
+def db_connect():
+    bucket = sqlite3.connect('bucket.db')
+    cursor = bucket.cursor()
+    cursor.execute('CREATE TABLE img(id string, img blob)')
+    bucket.commit()
+
 def diagnostic():
     return result
 
@@ -66,14 +72,14 @@ def count():
             except TypeError:
                 cv2.putText(img, f'computer see: {total//4}', (50, 100),
                             cv2.FONT_HERSHEY_DUPLEX, 1, (0, 255, 0), 1)
-                cv2.imshow('out', img)
-                if cv2.waitKey(1) == ord('r'):
-                    curr_val = prev_val = delta = total = 0
-                elif cv2.waitKey(1) == ord('q'):
-                    cv2.GaussianBlur(gray, (5, 5), 2)
-                    cap.release()
-                    cv2.destroyAllWindows()
-                    break
+        cv2.imshow('out', img)
+        if cv2.waitKey(1) == ord('r'):
+            curr_val = prev_val = delta = total = 0
+        elif cv2.waitKey(1) == ord('q'):
+            cv2.GaussianBlur(gray, (5, 5), 2)
+            cap.release()
+            cv2.destroyAllWindows()
+            break
 
 if __name__ == '__main__':
     check_platform()
