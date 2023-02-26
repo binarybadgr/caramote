@@ -3,6 +3,7 @@ import sys
 import faulthandler
 import platform
 import sqlite3
+import datetime
 import cv2
 
 # enable GPIO on ARM64 and enable debugging on x86_64
@@ -20,11 +21,17 @@ def check_platform():
     elif platform.machine() == '' or platform.machine() == 'x86_64':
         import pdb
 
-def db_connect():
+# create or connect exist db
+def db_setup():
     bucket = sqlite3.connect('bucket.db')
     cursor = bucket.cursor()
-    cursor.execute('CREATE TABLE img(id string, img blob)')
+    cursor.execute('CREATE TABLE img_bucket(id string, img blob)')
     bucket.commit()
+
+def write_db(result_image):
+    bucket = sqlite3.connect('bucket.db')
+    bucket.execute('INSERT INTO img_bucket VALUE(?,?)',
+                   ('pattern', sqlite3.Binary(result_image)))
 
 def diagnostic():
     return result
@@ -72,7 +79,12 @@ def count():
             except TypeError:
                 cv2.putText(img, f'computer see: {total//4}', (50, 100),
                             cv2.FONT_HERSHEY_DUPLEX, 1, (0, 255, 0), 1)
-        cv2.imshow('out', img)
+
+        # debugging
+        if DEBUG:
+            cv2.imshow('out', img)
+        else:
+            write_db(img)
         if cv2.waitKey(1) == ord('r'):
             curr_val = prev_val = delta = total = 0
         elif cv2.waitKey(1) == ord('q'):
