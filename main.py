@@ -69,15 +69,18 @@ def count():
             cv2.drawContours(img, contours, -1, (0, 255, 0), 1)
             cv2.putText(img, f'[Development]', (50, 50), cv2.FONT_HERSHEY_DUPLEX, 1,
                         (0, 255, 0), 1)
+            cv2.putText(img, f'{datetime.datetime.now().strftime('%H:%M:%S - %m/%d/%Y')}',
+                        (50, 100), cv2.FONT_HERSHEY_DUPLEX, 1,
+                        (0, 255, 0), 1)
             try:
                 curr_val = len(contours)
                 delta += curr_val - prev_val
                 total += delta
                 prev_val = curr_val
-                cv2.putText(img, f'computer see: {total//4}', (50, 100),
+                cv2.putText(img, f'computer see: {total//4}', (50, 150),
                             cv2.FONT_HERSHEY_DUPLEX, 1, (0, 255, 0), 1)
             except TypeError:
-                cv2.putText(img, f'computer see: {total//4}', (50, 100),
+                cv2.putText(img, f'computer see: {total//4}', (50, 150),
                             cv2.FONT_HERSHEY_DUPLEX, 1, (0, 255, 0), 1)
 
         # debugging
