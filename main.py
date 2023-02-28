@@ -7,6 +7,7 @@ import datetime
 import cv2
 
 # enable GPIO on ARM64 and enable debugging on x86_64
+# no *BSD support yet, since no `libgpio` wrapper for python
 def check_platform():
     if platform.machine() == 'ARM64':
         import RPi.GPIO as GPIO
