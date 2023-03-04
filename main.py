@@ -71,7 +71,7 @@ def count():
             cv2.drawContours(img, contours, -1, (0, 255, 0), 1)
             cv2.putText(img, f'[Development]', (50, 50), cv2.FONT_HERSHEY_DUPLEX, 1,
                         (0, 255, 0), 1)
-            cv2.putText(img, f'{datetime.datetime.now().strftime('%H:%M:%S - %m/%d/%Y')}',
+            cv2.putText(img, datetime.datetime.now().strftime('%H:%M:%S - %m/%d/%Y'),
                         (50, 100), cv2.FONT_HERSHEY_DUPLEX, 1,
                         (0, 255, 0), 1)
             # difference between frame
