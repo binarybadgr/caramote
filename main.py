@@ -34,6 +34,7 @@ def write_db(result_image):
     bucket.execute('INSERT INTO img_bucket VALUE(?,?)',
                    ('pattern', sqlite3.Binary(result_image)))
 
+
 def diagnostic():
     return result
 
@@ -73,6 +74,7 @@ def count():
             cv2.putText(img, f'{datetime.datetime.now().strftime('%H:%M:%S - %m/%d/%Y')}',
                         (50, 100), cv2.FONT_HERSHEY_DUPLEX, 1,
                         (0, 255, 0), 1)
+            # difference between frame
             try:
                 curr_val = len(contours)
                 delta += curr_val - prev_val
