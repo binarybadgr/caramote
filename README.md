@@ -25,7 +25,7 @@ The following graph explain a process of program
    └────┘     └────────────┘     └────────┘     └──────┘
 ```
 
-Initially, when machine finished booting it will be set to `idle` mode and wait for only 2 input is `capture` and `reset` 
+Initially, when machine finished booting it will be set to `idle` mode and wait for only 2 input is `capture` and `reset`
 
 LICENSE
 ---

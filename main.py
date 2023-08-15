@@ -1,3 +1,6 @@
+# target hardware -> raspberry pi 3, 4 w/ touch screen
+# target OS       -> FreeBSD 13.2 RELEASE
+
 import os
 import sys
 import faulthandler
@@ -8,6 +11,8 @@ import cv2
 
 # enable GPIO on ARM64 and enable debugging on x86_64
 # no *BSD support yet, since no `libgpio` wrapper for python
+
+
 def check_platform():
     if platform.machine() == 'ARM64':
         import RPi.GPIO as GPIO
@@ -22,34 +27,38 @@ def check_platform():
     elif platform.machine() == '' or platform.machine() == 'x86_64':
         import pdb
 
-# create or connect exist db
+
 def db_setup():
-    bucket = sqlite3.connect('bucket.db')
+    if os.path.isfile('bucket.db'):
+        bucket = sqlite3.connect('bucket.db', uri=True)
+    else:
+        bucket = sqlite3.connect('bucket.db')
     cursor = bucket.cursor()
     cursor.execute('CREATE TABLE img_bucket(id string, img blob)')
     bucket.commit()
 
+
 def write_db(result_image):
-    bucket = sqlite3.connect('bucket.db')
+    bucket = sqlite3.connect('bucket.db?mode=ro', uri=True)
     bucket.execute('INSERT INTO img_bucket VALUE(?,?)',
                    ('pattern', sqlite3.Binary(result_image)))
 
-
-def diagnostic():
-    return result
 
 def show_info():
     print('-- Caramote --')
     print(f'platform: {platform.machine()}')
     print(f'python: {platform.python_version()}')
     print(f'opencv: {cv2.__version__}')
+    print('database not ready') if not os.path.isfile('bucket.db') else print('database ready')
+
 
 def count():
     capture = cv2.VideoCapture(0)
     while capture.isOpened():
         ret, img_input = capture.read()
         if not ret:
-            # throw error and require reboot
+            # Put text on LCD screen
+            print('please connect camera')
             break
         gray = cv2.cvtColor(img_input, cv2.COLOR_BGR2GRAY)
         blur = cv2.GaussianBlur(gray, (5, 5), 2)
@@ -95,9 +104,10 @@ def count():
             curr_val = prev_val = delta = total = 0
         elif cv2.waitKey(1) == ord('q'):
             cv2.GaussianBlur(gray, (5, 5), 2)
-            cap.release()
+            capture.release()
             cv2.destroyAllWindows()
             break
+
 
 if __name__ == '__main__':
     check_platform()
