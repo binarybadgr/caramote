@@ -2,8 +2,6 @@
 # target OS       -> FreeBSD 13.2 RELEASE
 
 import os
-import sys
-import faulthandler
 import platform
 import sqlite3
 import datetime
@@ -12,6 +10,7 @@ import cv2
 # enable GPIO on ARM64 and enable debugging on x86_64
 # no *BSD support yet, since no `libgpio` wrapper for python
 
+back_sub = cv2.createBackgroundSubtractorMOG2()
 
 def check_platform():
     if platform.machine() == 'ARM64':
@@ -49,10 +48,14 @@ def show_info():
     print(f'platform: {platform.machine()}')
     print(f'python: {platform.python_version()}')
     print(f'opencv: {cv2.__version__}')
-    print('database not ready') if not os.path.isfile('bucket.db') else print('database ready')
+    if not os.path.isfile('bucket.db'):
+        print('database not ready')
+    else:
+        print('database ready')
 
 
 def count():
+    curr_val = prev_val = delta = total = 0
     capture = cv2.VideoCapture(0)
     while capture.isOpened():
         ret, img_input = capture.read()
@@ -62,7 +65,7 @@ def count():
             break
         gray = cv2.cvtColor(img_input, cv2.COLOR_BGR2GRAY)
         blur = cv2.GaussianBlur(gray, (5, 5), 2)
-        #blur = cv2.bilateralFilter(blur, 9, 15, 15)
+        blur = cv2.bilateralFilter(blur, 9, 15, 15)
         gray = back_sub.apply(cv2.GaussianBlur(gray, (5, 5), 2))
         canny = cv2.Canny(gray, 10, 20)
         _, thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
@@ -73,14 +76,15 @@ def count():
             if len(contours) > 1: cv2.waitKey(-1)
             rect = cv2.minAreaRect(c)
             box = cv2.boxPoints(rect)
-            box = np.int0(box)
             area = cv2.contourArea(c)
             x, y, w, h = cv2.boundingRect(c)
             cv2.drawContours(img, [box], 0, (0, 0, 255), 2)
             cv2.drawContours(img, contours, -1, (0, 255, 0), 1)
-            cv2.putText(img, f'[Development]', (50, 50), cv2.FONT_HERSHEY_DUPLEX, 1,
+            cv2.putText(img, f'[Development]', 
+                        (50, 50), cv2.FONT_HERSHEY_DUPLEX, 1,
                         (0, 255, 0), 1)
-            cv2.putText(img, datetime.datetime.now().strftime('%H:%M:%S - %m/%d/%Y'),
+            cv2.putText(img, datetime.datetime.now()
+                        .strftime('%H:%M:%S - %m/%d/%Y'),
                         (50, 100), cv2.FONT_HERSHEY_DUPLEX, 1,
                         (0, 255, 0), 1)
             # difference between frame
