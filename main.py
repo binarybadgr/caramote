@@ -12,17 +12,11 @@ import cv2
 
 back_sub = cv2.createBackgroundSubtractorMOG2()
 
+
+# only works on ARM platform
 def check_platform():
     if platform.machine() == 'ARM64':
-        import RPi.GPIO as GPIO
-        import time
-        # Define GPIO to LCD mapping
-        LCD_RS = 7
-        LCD_E  = 8
-        LCD_D4 = 25
-        LCD_D5 = 24
-        LCD_D6 = 23
-        LCD_D7 = 18
+        import hw_ctrl
     elif platform.machine() == '' or platform.machine() == 'x86_64':
         import pdb
 
@@ -73,17 +67,18 @@ def count():
                                                 cv2.CHAIN_APPROX_SIMPLE)
         for c in contours:
             print(len(contours))
-            if len(contours) > 1: cv2.waitKey(-1)
+            if len(contours) > 1:
+                cv2.waitKey(-1)
             rect = cv2.minAreaRect(c)
             box = cv2.boxPoints(rect)
             area = cv2.contourArea(c)
             x, y, w, h = cv2.boundingRect(c)
-            cv2.drawContours(img, [box], 0, (0, 0, 255), 2)
-            cv2.drawContours(img, contours, -1, (0, 255, 0), 1)
-            cv2.putText(img, f'[Development]', 
+            cv2.drawContours(img_input, [box], 0, (0, 0, 255), 2)
+            cv2.drawContours(img_input, contours, -1, (0, 255, 0), 1)
+            cv2.putText(img_input, f'[Development]',
                         (50, 50), cv2.FONT_HERSHEY_DUPLEX, 1,
                         (0, 255, 0), 1)
-            cv2.putText(img, datetime.datetime.now()
+            cv2.putText(img_input, datetime.datetime.now()
                         .strftime('%H:%M:%S - %m/%d/%Y'),
                         (50, 100), cv2.FONT_HERSHEY_DUPLEX, 1,
                         (0, 255, 0), 1)
@@ -93,17 +88,17 @@ def count():
                 delta += curr_val - prev_val
                 total += delta
                 prev_val = curr_val
-                cv2.putText(img, f'computer see: {total//4}', (50, 150),
+                cv2.putText(img_input, f'computer see: {total//4}', (50, 150),
                             cv2.FONT_HERSHEY_DUPLEX, 1, (0, 255, 0), 1)
             except TypeError:
-                cv2.putText(img, f'computer see: {total//4}', (50, 150),
+                cv2.putText(img_input, f'computer see: {total//4}', (50, 150),
                             cv2.FONT_HERSHEY_DUPLEX, 1, (0, 255, 0), 1)
 
         # debugging
         if DEBUG:
-            cv2.imshow('out', img)
+            cv2.imshow('out', img_input)
         else:
-            write_db(img)
+            write_db(img_input)
         if cv2.waitKey(1) == ord('r'):
             curr_val = prev_val = delta = total = 0
         elif cv2.waitKey(1) == ord('q'):
